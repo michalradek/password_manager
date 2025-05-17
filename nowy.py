@@ -9,7 +9,7 @@ root.title("Password manager")
 root.geometry("500x400")
 
 def on_click_login():
-    login(frame_login, main_frame)
+    login(frame_login, main_frame, entry_master)
 
 def on_click_logout():
     logout(main_frame, frame_login, entry_master)
