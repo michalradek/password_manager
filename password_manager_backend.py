@@ -6,20 +6,19 @@ from tkinter import messagebox
 conn = sqlite3.connect("password_manager.db")
 cursor = conn.cursor()
 
-def check_database():
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS master (
-        id INTEGER PRIMART KEY ,
-        passwd TEXT
+def check_database(table_name, column):
+    cursor.execute(f"""
+        CREATE TABLE IF NOT EXISTS {table_name} (
+        {column}
         )""")
     conn.commit()
 
 def login(frame_login, main_frame, entry_master):
-    check_database()
+    check_database("master", "id INTEGER PRIMARY KEY, passwd TEXT")
     cursor.execute("SELECT passwd FROM master WHERE id = 1")
     master_key = cursor.fetchone()
     if len(entry_master.get()) < 6:
-        messagebox.showinfo("Error", "Password must be 6 charts lenght minimum")
+        messagebox.showinfo("Error", "Password must be at least 6 characters long.")
     else:
         if master_key is None:
             hashed = bcrypt.hashpw(entry_master.get().encode(), bcrypt.gensalt())
@@ -36,6 +35,22 @@ def logout(main_frame, frame_login, entry_master):
     main_frame.pack_forget()
     frame_login.pack(expand=True)
     entry_master.delete(0, tk.END)
+    
+def add_password(entry_site, entry_username, entry_password):
+    check_database("list", "id INTEGER PRIMARY KEY, service TEXT, login TEXT, password TEXT")
+    cursor.execute("""
+        INSERT INTO list (service, login, password) VALUES (?, ?, ?)
+    """, (entry_site.get(), entry_username.get(), entry_password.get()))
+    conn.commit()
+    messagebox.showinfo("Info", "Credentials added")
+    
+def print_all():
+    check_database("list", "id INTEGER PRIMARY KEY, service TEXT, login TEXT, password TEXT")
+    cursor.execute("SELECT * FROM list")
+    wyniki = cursor.fetchall()
+    return wyniki
+    
+    
     
     
 
