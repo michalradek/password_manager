@@ -20,6 +20,7 @@ def on_click_logout():
 
 def on_click_add():
     add_password(entry_site, entry_username, entry_password)
+    on_click_refresh()
 
 def on_click_refresh():
     for i in tree.get_children():
