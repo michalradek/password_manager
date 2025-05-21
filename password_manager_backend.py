@@ -43,6 +43,13 @@ def add_password(entry_site, entry_username, entry_password):
     """, (entry_site.get(), entry_username.get(), entry_password.get()))
     conn.commit()
     messagebox.showinfo("Info", "Credentials added")
+
+def delete_position(service, login, password):
+    check_database("list", "id INTEGER PRIMARY KEY, service TEXT, login TEXT, password TEXT")
+    cursor.execute("""
+        DELETE FROM list WHERE service=? AND login=? AND password=?""", (service, login, password))
+    conn.commit()
+    messagebox.showinfo("Info", "Credentials deleted")
     
 def print_all():
     check_database("list", "id INTEGER PRIMARY KEY, service TEXT, login TEXT, password TEXT")

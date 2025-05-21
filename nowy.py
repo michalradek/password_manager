@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox, simpledialog
-from password_manager_backend import login, logout, add_password, print_all
+from password_manager_backend import login, logout, add_password, print_all, delete_position
 
 
 
@@ -45,7 +45,10 @@ def on_right_click(event):
 def delete_selected_item():
     selected_item = tree.selection()
     if selected_item:
-        tree.delete(selected_item[0])
+        values = tree.item(selected_item[0], 'values')
+        if messagebox.askyesno("Confirm deletion", f"Delete password for {values[0]}?"):
+            tree.delete(selected_item[0])
+            delete_position(values[0], values[1], values[2])
         
 def toggle_password_visibility():
     if details_password_entry.cget("show") == "*":
