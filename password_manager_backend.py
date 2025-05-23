@@ -7,6 +7,10 @@ conn = sqlite3.connect("password_manager.db")
 cursor = conn.cursor()
 
 def check_database(table_name, column):
+    allowed_tables = {"master", "list"}
+    if table_name not in allowed_tables:
+        raise ValueError("Invalid table name")
+        
     cursor.execute(f"""
         CREATE TABLE IF NOT EXISTS {table_name} (
         {column}
