@@ -10,7 +10,6 @@ def check_database(table_name, column):
     allowed_tables = {"master", "list"}
     if table_name not in allowed_tables:
         raise ValueError("Invalid table name")
-        
     cursor.execute(f"""
         CREATE TABLE IF NOT EXISTS {table_name} (
         {column}
@@ -18,7 +17,7 @@ def check_database(table_name, column):
     conn.commit()
 
 def login(frame_login, main_frame, entry_master):
-    check_database("master", "id INTEGER PRIMARY KEY, passwd TEXT")
+    check_database("master", "id INTEGER PRIMARY KEY, passwd BLOB")
     cursor.execute("SELECT passwd FROM master WHERE id = 1")
     master_key = cursor.fetchone()
     if len(entry_master.get()) < 6:
@@ -26,10 +25,10 @@ def login(frame_login, main_frame, entry_master):
     else:
         if master_key is None:
             hashed = bcrypt.hashpw(entry_master.get().encode(), bcrypt.gensalt())
-            cursor.execute("INSERT INTO master (id, passwd) VALUES (1, ?)", (hashed.decode(),))
+            cursor.execute("INSERT INTO master (id, passwd) VALUES (1, ?)", (hashed,))
             conn.commit()
             messagebox.showinfo("Info", "Master password set")
-        elif bcrypt.checkpw(entry_master.get().encode(), master_key[0].encode()):
+        elif bcrypt.checkpw(entry_master.get().encode(), master_key[0]):
             frame_login.pack_forget()
             main_frame.pack(padx=20, pady=20, fill="both", expand=True)
         else:
