@@ -6,6 +6,8 @@ from tkinter import messagebox
 conn = sqlite3.connect("password_manager.db")
 cursor = conn.cursor()
 
+is_authenticated = False
+
 def check_database(table_name, column):
     allowed_tables = {"master", "list"}
     if table_name not in allowed_tables:
@@ -29,17 +31,23 @@ def login(frame_login, main_frame, entry_master):
             conn.commit()
             messagebox.showinfo("Info", "Master password set")
         elif bcrypt.checkpw(entry_master.get().encode(), master_key[0]):
+            global is_authenticated
+            is_authenticated = True
             frame_login.pack_forget()
             main_frame.pack(padx=20, pady=20, fill="both", expand=True)
         else:
             messagebox.showinfo("Error", "Wrong master password")
     
 def logout(main_frame, frame_login, entry_master):
+    global is_authenticated
+    is_authenticated = False
     main_frame.pack_forget()
     frame_login.pack(expand=True)
     entry_master.delete(0, tk.END)
     
 def add_password(entry_site, entry_username, entry_password):
+    if not is_authenticated:
+        return
     check_database("list", "id INTEGER PRIMARY KEY, service TEXT, login TEXT, password TEXT")
     cursor.execute("""
         INSERT INTO list (service, login, password) VALUES (?, ?, ?)
@@ -48,6 +56,8 @@ def add_password(entry_site, entry_username, entry_password):
     messagebox.showinfo("Info", "Credentials added")
 
 def delete_position(service, login, password):
+    if not is_authenticated:
+        return
     check_database("list", "id INTEGER PRIMARY KEY, service TEXT, login TEXT, password TEXT")
     cursor.execute("""
         DELETE FROM list WHERE service=? AND login=? AND password=?""", (service, login, password))
@@ -55,6 +65,8 @@ def delete_position(service, login, password):
     messagebox.showinfo("Info", "Credentials deleted")
     
 def print_all():
+    if not is_authenticated:
+        return []
     check_database("list", "id INTEGER PRIMARY KEY, service TEXT, login TEXT, password TEXT")
     cursor.execute("SELECT * FROM list")
     wyniki = cursor.fetchall()
