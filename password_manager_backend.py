@@ -72,6 +72,25 @@ def print_all():
     wyniki = cursor.fetchall()
     return wyniki
     
+def change_master_password(old_password, new_password):
+    check_database("master", "id INTEGER PRIMARY KEY, passwd BLOB")
+    if len(new_password) < 6:
+        messagebox.showinfo("Info", "New password must be at least 6 characters long")
+        return
+    cursor.execute("SELECT passwd FROM master WHERE id = 1")
+    result = cursor.fetchone()
+    if result is None:
+        messagebox.showinfo("Error", "Master password is not set")
+        return
+    
+    if not bcrypt.checkpw(old_password.encode(), result[0]):
+        messagebox.showinfo("Error", "Old password is incorrect")
+        return
+    
+    new_hashed = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt())
+    cursor.execute("UPDATE master SET passwd = ? WHERE id = 1", (new_hashed,))
+    conn.commit()
+    messagebox.showinfo("Info", "Master password  changed successfully") 
     
     
     

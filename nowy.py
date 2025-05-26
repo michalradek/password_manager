@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox, simpledialog
-from password_manager_backend import login, logout, add_password, print_all, delete_position
+from password_manager_backend import login, logout, add_password, print_all, delete_position, change_master_password
 
 
 
@@ -35,7 +35,7 @@ def on_tree_select(event):
         details_service_var.set(values[0])
         details_login_var.set(values[1])
         details_password_var.set(values[2])
-        
+
 
 def on_right_click(event):
     selected_item = tree.identify_row(event.y)
@@ -57,16 +57,40 @@ def toggle_password_visibility():
     else:
         details_password_entry.config(state="normal", show="*")
     details_password_entry.config(state="readonly")
+
+def change_key():
+    def on_click_change():
+        old_pass = old_password_entry.get()
+        new_pass = new_password_entry.get()
+        change_master_password(old_pass, new_pass)
+    
+    change_key_frame = tk.Toplevel(login_frame)
+    change_key_frame.title("Change master key")
+    old_password_label = tk.Label(change_key_frame, text="Enter old passoword")
+    old_password_entry = tk.Entry(change_key_frame, width=150)
+    new_password_label = tk.Label(change_key_frame, text="Enter new password")
+    new_password_entry = tk.Entry(change_key_frame)
+    save_change_button = tk.Button(change_key_frame, text="Save new password", command=on_click_change)
+    
+    change_key_frame.resizable(False, False)
+    old_password_label.pack(padx=5, pady=5, fill="both")
+    old_password_entry.pack(padx=5, pady=5, fill="both")
+    new_password_label.pack(padx=5, pady=5, fill="both")
+    new_password_entry.pack(padx=5, pady=5, fill="both")
+    save_change_button.pack(padx=5,pady=15, fill="both")
+    
 # login frame
 
 login_frame = tk.Frame(root)
 login_label = tk.Label(login_frame, text="Enter master password: ")
 master_entry = tk.Entry(login_frame, show="*")
-login_button = tk.Button(login_frame, text="Zaloguj", command=on_click_login)
+login_button = tk.Button(login_frame, text="Log in", command=on_click_login)
+change_key_button = tk.Button(login_frame, text="Change master key", command=change_key)
 
 login_label.pack(pady=10, fill="x")
 master_entry.pack(pady=5, fill="x")
 login_button.pack(pady=10, fill="x")
+change_key_button.pack(pady=10, fill="x")
 login_frame.pack(expand=True)
 
 # main frame
