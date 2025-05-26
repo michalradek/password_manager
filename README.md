@@ -12,6 +12,8 @@ A simple password manager written in Python. The program allows you to store pas
 
 - Manually refresh the password list
 
+- Change master password
+
 # Tech stack
 
 The application is written in Python. The frontend is built using the "Tkinter" library. The backend uses the following libraries:
